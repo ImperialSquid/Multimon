@@ -18,9 +18,22 @@ def get_type_indexes():
     return types
 
 
+def get_generation_indexes():
+    generations = dict()
+    i = 1
+    while True:
+        try:
+            for pokemon in pb.generation(i).pokemon_species:
+                generations[pokemon.name] = i
+            i += 1
+        except HTTPError:
+            break
+    return generations
+
 def main():
     pass
 
 
 if __name__ == '__main__':
-    print(get_type_indexes())
+    print(len(get_generation_indexes()))
+
