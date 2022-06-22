@@ -14,6 +14,7 @@ def get_type_indexes():
             i += 1
         except HTTPError:
             break
+    types[""] = 0
     return types
 
 
