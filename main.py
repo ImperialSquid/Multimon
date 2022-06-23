@@ -3,9 +3,12 @@ import os
 import pokebase as pb
 from requests.exceptions import HTTPError
 import cv2
+import logging
 
 
 def get_type_indexes():
+    log.info("Getting type indexes")
+
     types = dict()
     i = 1
     while True:
@@ -15,10 +18,14 @@ def get_type_indexes():
         except HTTPError:
             break
     types[""] = 0
+
+    log.info("Got type indexes")
     return types
 
 
 def get_generation_indexes():
+    log.info("Getting generation indexes")
+
     generations = dict()
     i = 1
     while True:
@@ -28,10 +35,14 @@ def get_generation_indexes():
             i += 1
         except HTTPError:
             break
+
+    log.info("Got generation indexes")
     return generations
 
 
 def get_pokemon_data(type_map, gen_map):
+    log.info("Getting pokemon data")
+
     # loop over pokemon until an error is raised from the endpoint not being found
     index = 1
     data = {}
@@ -49,9 +60,15 @@ def get_pokemon_data(type_map, gen_map):
 
             data[index] = [type1, type2, gen, hp, att, def_, spatt, spdef, speed, height, weight]
             # print(type1, type2, gen, hp, att, def_, spatt, spdef, speed, height, weight)
+
+            # log every 10th pokemon
+            if index % 10 == 0:
+                log.debug("Got data for {}".format(index))
         except HTTPError:  # if the pokemon is not found, break the loop
             break
         index += 1
+
+    log.info("Got pokemon data")
     return data
 
 
@@ -63,6 +80,8 @@ def save_pokemon_images(index, back=False):
     if not os.path.exists(filepath):
         with open(filepath, "wb") as f:
             f.write(sprite.img_data)
+    else:
+        log.debug("Skipping {}".format(filename))
 
 
 def main():
@@ -89,8 +108,9 @@ def main():
                 f.write(str(index*2+1).zfill(4) + ".png" +
                         ",".join(str(x) for x in data[index+1]) + "\n")
 
-            if index % 100 == 0:
-                print("Downloaded {} images".format(index))
+            # log every 10th pokemon
+            if index % 10 == 0 and index != 0:
+                log.debug("Saved data and sprites for {}".format(index))
 
             index += 1
         except HTTPError:
@@ -99,5 +119,8 @@ def main():
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
+    logging.getLogger("urllib3").setLevel(logging.WARNING)  # disable requests logging
+    log = logging.getLogger()
     main()
 
