@@ -31,15 +31,7 @@ def get_generation_indexes():
     return generations
 
 
-def main():
-    # get index maps for types and generations
-    type_map = get_type_indexes()
-    gen_map = get_generation_indexes()
-
-    # write the header
-    with open("data.txt", "w") as f:
-        f.write("name,type1,type2,gen,hp,att,def,spatt,spdef,speed,hght,wght\n")
-
+def get_pokemon_data(type_map, gen_map):
     # loop over pokemon until an error is raised from the endpoint not being found
     index = 1
     data = {}
@@ -60,6 +52,50 @@ def main():
         except HTTPError:  # if the pokemon is not found, break the loop
             break
         index += 1
+    return data
+
+
+def save_pokemon_images(index, back=False):
+    sprite = pb.sprite("pokemon", index + 1, back=back)
+
+    filename = str(index*2+int(back)).zfill(4) + ".png"
+    filepath = os.path.join("./sprites/raw", filename)
+    if not os.path.exists(filepath):
+        with open(filepath, "wb") as f:
+            f.write(sprite.img_data)
+
+
+def main():
+    # get index maps for types and generations
+    type_map = get_type_indexes()
+    gen_map = get_generation_indexes()
+
+    # write header to csv
+    with open("data.csv", "w") as f:
+        f.write("index,type1,type2,gen,hp,att,def,spatt,spdef,speed,height,weight\n")
+
+    # get pokemon data
+    data = get_pokemon_data(type_map, gen_map)
+
+    index = 0
+    while True:
+        try:
+            save_pokemon_images(index)
+            save_pokemon_images(index, back=True)
+
+            with open("data.csv", "a") as f:
+                f.write(str(index*2).zfill(4) + ".png" +
+                        ",".join(str(x) for x in data[index+1]) + "\n")
+                f.write(str(index*2+1).zfill(4) + ".png" +
+                        ",".join(str(x) for x in data[index+1]) + "\n")
+
+            if index % 100 == 0:
+                print("Downloaded {} images".format(index))
+
+            index += 1
+        except HTTPError:
+            break
+        break
 
 
 if __name__ == '__main__':
