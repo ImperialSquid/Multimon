@@ -40,30 +40,47 @@ def get_generation_indexes():
     return generations
 
 
-def get_pokemon_data(type_map, gen_map):
+def get_pokemon_data(index, gen_map=None, type_map=None):
+    p = pb.pokemon(index)
+
+    # check pokemon name in gen map
+    if p.name not in gen_map:
+        # if not, fetch the variants' names from the species
+        names = [var.pokemon.name for var in pb.pokemon_species(p.species.name).varieties]
+    else:
+        names = [p.name]
+
+    for name in names:
+        if len(names) > 1:
+            pokemon = pb.pokemon(name)
+        else:
+            pokemon = p  # skip refetching if only one variant
+
+        # get types and pad with empty entry if only one exists
+        types = ([pokemon.types[n].type.name for n in range(len(pokemon.types))] + [""])[:2]
+        type1, type2 = sorted([type_map[t] for t in types])
+
+        gen = gen_map[pokemon.species.name]
+        hp, att, def_, spatt, spdef, speed = [pokemon.stats[n].base_stat for n in range(6)]
+        height, weight = [pokemon.height, pokemon.weight]
+
+        yield [name, type1, type2, gen, hp, att, def_, spatt, spdef, speed, height, weight]
+
+
+def get_all_pokemon_data(type_map, gen_map):
     log.info("Getting pokemon data")
 
-    # loop over pokemon until an error is raised from the endpoint not being found
+    # loop over pokemon species until an error is raised from the endpoint not being found
     index = 1
     data = {}
     while True:
         try:
-            pokemon = pb.pokemon(index)
-
-            # get types and pad with empty entry if only one exists
-            types = ([pokemon.types[n].type.name for n in range(len(pokemon.types))] + [""])[:2]
-            type1, type2 = sorted([type_map[t] for t in types])
-
-            gen = gen_map[pokemon.name]
-            hp, att, def_, spatt, spdef, speed = [pokemon.stats[n].base_stat for n in range(6)]
-            height, weight = [pokemon.height, pokemon.weight]
-
-            data[index] = [type1, type2, gen, hp, att, def_, spatt, spdef, speed, height, weight]
-            # print(type1, type2, gen, hp, att, def_, spatt, spdef, speed, height, weight)
+            for row in get_pokemon_data(index, gen_map, type_map):
+                data[row[0]] = row[1:]
 
             # log every 10th pokemon
             if index % 10 == 0:
-                log.debug("Got data for {}".format(index))
+                log.info("Got data for {}".format(index))
         except HTTPError:  # if the pokemon is not found, break the loop
             break
         index += 1
@@ -72,8 +89,8 @@ def get_pokemon_data(type_map, gen_map):
     return data
 
 
-def save_pokemon_images(index, back=False):
-    sprite = pb.sprite("pokemon", index + 1, back=back)
+def save_pokemon_images(index, name, back=False):
+    sprite = pb.sprite("pokemon", name, back=back)
 
     filename = str(index*2+int(back)).zfill(4) + ".png"
     filepath = os.path.join("./sprites/raw", filename)
@@ -94,19 +111,18 @@ def main():
         f.write("index,type1,type2,gen,hp,att,def,spatt,spdef,speed,height,weight\n")
 
     # get pokemon data
-    data = get_pokemon_data(type_map, gen_map)
+    data = get_all_pokemon_data(type_map, gen_map)
 
-    index = 0
-    while True:
+    for index, name in enumerate(data):
         try:
-            save_pokemon_images(index)
-            save_pokemon_images(index, back=True)
+            save_pokemon_images(index, name)
+            save_pokemon_images(index, name, back=True)
 
             with open("data.csv", "a") as f:
                 f.write(str(index*2).zfill(4) + ".png" +
-                        ",".join(str(x) for x in data[index+1]) + "\n")
+                        ",".join(str(x) for x in data[name]) + "\n")
                 f.write(str(index*2+1).zfill(4) + ".png" +
-                        ",".join(str(x) for x in data[index+1]) + "\n")
+                        ",".join(str(x) for x in data[name]) + "\n")
 
             # log every 10th pokemon
             if index % 10 == 0 and index != 0:
@@ -122,5 +138,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     logging.getLogger("urllib3").setLevel(logging.WARNING)  # disable requests logging
     log = logging.getLogger()
+
     main()
 
+    log.info("Done!")
