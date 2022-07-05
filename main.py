@@ -20,6 +20,7 @@ def get_type_indexes():
     types[""] = 0
 
     log.info("Got type indexes")
+    log.debug(types)
     return types
 
 
@@ -37,6 +38,7 @@ def get_generation_indexes():
             break
 
     log.info("Got generation indexes")
+    log.debug(generations)
     return generations
 
 
@@ -77,10 +79,11 @@ def get_all_pokemon_data(type_map, gen_map):
         try:
             for row in get_pokemon_data(index, gen_map, type_map):
                 data[row[0]] = row[1:]
+                log.debug(row)
 
             # log every 10th pokemon
             if index % 10 == 0:
-                log.info("Got data for {}".format(index))
+                log.info("Got data for {} species".format(index))
         except HTTPError:  # if the pokemon is not found, break the loop
             break
         index += 1
