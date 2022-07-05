@@ -83,7 +83,7 @@ def get_all_pokemon_data(type_map, gen_map):
 
             # log every 10th pokemon
             if index % 10 == 0:
-                log.info("Got data for {} species".format(index))
+                log.info(f"Got data for {index} species")
         except HTTPError:  # if the pokemon is not found, break the loop
             break
         index += 1
@@ -100,8 +100,9 @@ def save_pokemon_images(index, name, back=False):
     if not os.path.exists(filepath):
         with open(filepath, "wb") as f:
             f.write(sprite.img_data)
+            log.debug(f"Saved sprite for {name} ({back=})")
     else:
-        log.debug("Skipping {}".format(filename))
+        log.debug(f"Skipping {name}")
 
 
 def main():
@@ -129,7 +130,7 @@ def main():
 
             # log every 10th pokemon
             if index % 10 == 0 and index != 0:
-                log.debug("Saved data and sprites for {}".format(index))
+                log.debug(f"Saved data and sprites for {index}")
 
             index += 1
         except HTTPError:
