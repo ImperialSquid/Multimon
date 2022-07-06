@@ -56,6 +56,8 @@ def get_pokemon_data(index, gen_map=None, type_map=None):
     else:
         names = [p.name]
 
+    results = []
+
     for name in names:
         if len(names) > 1:
             pokemon = pb.pokemon(name)
@@ -70,7 +72,9 @@ def get_pokemon_data(index, gen_map=None, type_map=None):
         hp, att, def_, spatt, spdef, speed = [pokemon.stats[n].base_stat for n in range(6)]
         height, weight = [pokemon.height, pokemon.weight]
 
-        yield [name, type1, type2, gen, hp, att, def_, spatt, spdef, speed, height, weight]
+        results.append([name, type1, type2, gen, hp, att, def_, spatt, spdef, speed, height, weight])
+
+    return results
 
 
 def get_all_pokemon_data(type_map, gen_map):
