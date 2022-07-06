@@ -74,6 +74,7 @@ def get_pokemon_data(index, gen_map=None, type_map=None):
         height, weight = [pokemon.height, pokemon.weight]
 
         results.append([name, type1, type2, gen, hp, att, def_, spatt, spdef, speed, height, weight])
+        log.debug(f"Got data for {name} {[name, type1, type2, gen, hp, att, def_, spatt, spdef, speed, height, weight]}")
 
     return results
 
