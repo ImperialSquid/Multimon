@@ -91,6 +91,19 @@ def save_pokemon_images(filename, index, back=False):
         log.debug(f"Skipping {filename}")
 
 
+def postprocess_pokemon_data():
+    log.info("Postprocessing pokemon data...")
+
+    # load csv data, figure our standardised and normalised values and append to every row
+    df = pd.read_csv("data.csv")
+    for stat in ["hp", "att", "def", "spatt", "spdef", "speed", "height", "weight"]:
+        df[stat+"std"] = df[stat].apply(lambda x: (x - df[stat].mean()) / df[stat].std())
+        df[stat+"norm"] = df[stat].apply(lambda x: (x - df[stat].min()) / (df[stat].max() - df[stat].min()))
+    df.to_csv("data.csv", index=False)
+
+    log.info("Postprocessed pokemon data")
+
+
 def main():
     # get index maps for types and generations
     type_map = get_type_indexes()
