@@ -104,6 +104,21 @@ def postprocess_pokemon_data():
     log.info("Postprocessed pokemon data")
 
 
+def postprocess_pokemon_images(size=(128, 128)):
+    log.info("Postprocessing pokemon images...")
+
+    # load images, standardise size, remove transparency and save to sprites/processed
+    for filename in os.listdir("./sprites/raw"):
+        if filename.endswith(".png"):
+            img = cv2.imread(os.path.join("./sprites/raw", filename))
+            img = cv2.resize(img, size)
+            img = cv2.cvtColor(img, cv2.COLOR_RGBA2RGB)
+            cv2.imwrite(os.path.join("./sprites/processed", filename), img)
+            log.debug(f"Saved processed image for {filename}")
+
+    log.info("Postprocessed pokemon images")
+
+
 def main():
     # get index maps for types and generations
     type_map = get_type_indexes()
