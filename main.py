@@ -4,6 +4,7 @@ import pokebase as pb
 from requests.exceptions import HTTPError
 import cv2
 import logging
+import pandas as pd
 
 
 def get_type_indexes():
@@ -77,40 +78,16 @@ def get_pokemon_data(index, gen_map=None, type_map=None):
     return results
 
 
-def get_all_pokemon_data(type_map, gen_map):
-    log.info("Getting pokemon data")
+def save_pokemon_images(filename, index, back=False):
+    sprite = pb.sprite("pokemon", index, back=back)
 
-    # loop over pokemon species until an error is raised from the endpoint not being found
-    index = 847
-    data = {}
-    while True:
-        try:
-            for row in get_pokemon_data(index, gen_map, type_map):
-                data[row[0]] = row[1:]
-                log.debug(row)
-
-            # log every 10th pokemon
-            if index % 10 == 0:
-                log.info(f"Got data for {index} species")
-        except HTTPError:  # if the pokemon is not found, break the loop
-            break
-        index += 1
-
-    log.info("Got pokemon data")
-    return data
-
-
-def save_pokemon_images(index, name, back=False):
-    sprite = pb.sprite("pokemon", name, back=back)
-
-    filename = str(index*2+int(back)).zfill(4) + ".png"
     filepath = os.path.join("./sprites/raw", filename)
     if not os.path.exists(filepath):
         with open(filepath, "wb") as f:
             f.write(sprite.img_data)
-            log.debug(f"Saved sprite for {name} ({back=})")
+            log.debug(f"Saved sprite for filename {filename}")
     else:
-        log.debug(f"Skipping {name}")
+        log.debug(f"Skipping {filename}")
 
 
 def main():
@@ -122,28 +99,27 @@ def main():
     with open("data.csv", "w") as f:
         f.write("index,type1,type2,gen,hp,att,def,spatt,spdef,speed,height,weight\n")
 
-    # get pokemon data
-    data = get_all_pokemon_data(type_map, gen_map)
-
-    for index, name in enumerate(data):
+    index = 1
+    while True:
         try:
-            save_pokemon_images(index, name)
-            save_pokemon_images(index, name, back=True)
+            # get pokemon data
+            data = get_pokemon_data(index, gen_map, type_map)
 
-            with open("data.csv", "a") as f:
-                f.write(str(index*2).zfill(4) + ".png" +
-                        ",".join(str(x) for x in data[name]) + "\n")
-                f.write(str(index*2+1).zfill(4) + ".png" +
-                        ",".join(str(x) for x in data[name]) + "\n")
+            for row in data:
+                for back in [False, True]:
+                    with open("data.csv", "a") as f:
+                        name = row[0] + "_" + ["front", "back"][int(back)]
+                        iname = str((index-1)*2+int(back)).zfill(4) + ".png"
 
-            # log every 10th pokemon
-            if index % 10 == 0 and index != 0:
-                log.debug(f"Saved data and sprites for {index}")
+                        f.write(iname + "," + ",".join(str(x) for x in row[1:]) + "\n")
+                        log.debug(f"Saved data for {name}")
 
-            index += 1
-        except HTTPError:
+                        save_pokemon_images(iname, index, back)
+
+        except HTTPError as e:
+            log.error(e)
             break
-        break
+        index += 1
 
 
 if __name__ == '__main__':
