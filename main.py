@@ -50,9 +50,9 @@ def get_pokemon_data(index, gen_map=None, type_map=None):
         # if not, fetch the variants' names from the species
         names = [var.pokemon.name for var in pb.pokemon_species(p.species.name).varieties]
 
-        # basculin's third variant is bugged so skip it
-        if "basculin" == p.species.name:
-            names = names[:2]
+        # some variants are bugged and give Nones at the end of the list, so we need to remove them
+        if p.species.name in ["basculin", "toxtricity-amped"]:
+            names = names[:-1]
     else:
         names = [p.name]
 
@@ -81,7 +81,7 @@ def get_all_pokemon_data(type_map, gen_map):
     log.info("Getting pokemon data")
 
     # loop over pokemon species until an error is raised from the endpoint not being found
-    index = 1
+    index = 847
     data = {}
     while True:
         try:
