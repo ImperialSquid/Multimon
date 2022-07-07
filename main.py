@@ -5,6 +5,7 @@ from requests.exceptions import HTTPError
 import cv2
 import logging
 import pandas as pd
+from zlib import crc32
 
 
 def get_type_indexes():
@@ -127,6 +128,9 @@ def main():
     # write header to csv
     with open("data.csv", "w") as f:
         f.write("index,type1,type2,gen,hp,att,def,spatt,spdef,speed,height,weight\n")
+        
+    with open("partitions.csv", "w") as f:
+        f.write("index,tt_split,ttv_split\n")
 
     index = 1
     while True:
@@ -136,14 +140,25 @@ def main():
 
             for row in data:
                 for back in [False, True]:
-                    with open("data.csv", "a") as f:
-                        name = row[0] + "_" + ["front", "back"][int(back)]
-                        iname = str((index-1)*2+int(back)).zfill(4) + ".png"
+                    name = row[0] + "_" + ["front", "back"][int(back)]
+                    iname = str((index-1)*2+int(back)).zfill(4) + ".png"
 
+                    with open("data.csv", "a") as f:
                         f.write(iname + "," + ",".join(str(x) for x in row[1:]) + "\n")
                         log.debug(f"Saved data for {name}")
 
-                        save_pokemon_images(iname, index, back)
+                    save_pokemon_images(iname, index, back)
+
+                    with open("partitions.csv", "a") as f:
+                        # hash the name to get a partition value in [0:1]
+                        part = float(crc32(name.encode("utf-8")) & 0xffffffff) / 2**32
+                        # train/test split is 0.8/0.2
+                        tt = str(int(part < 0.8))  # [0.8:1] -> 1, else 0
+                        # train/test/validation split is 0.7/0.15/0.15
+                        ttv = str(2 if part > 0.85 else int(part < 0.7))  # [0.85:1] -> 2, [0.7:0.85] -> 1, else 0
+
+                        f.write(iname + "," + tt + "," + ttv + "\n")
+                        log.debug(f"Saved partition for {name}")
 
         except HTTPError as e:
             log.error(e)
