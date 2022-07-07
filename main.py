@@ -153,9 +153,9 @@ def main():
                         # hash the name to get a partition value in [0:1]
                         part = float(crc32(name.encode("utf-8")) & 0xffffffff) / 2**32
                         # train/test split is 0.8/0.2
-                        tt = str(int(part < 0.8))  # [0.8:1] -> 1, else 0
+                        tt = str(int(part > 0.8))  # [0.8:1] -> 1, else 0
                         # train/test/validation split is 0.7/0.15/0.15
-                        ttv = str(2 if part > 0.85 else int(part < 0.7))  # [0.85:1] -> 2, [0.7:0.85] -> 1, else 0
+                        ttv = str(2 if part > 0.85 else int(part > 0.7))  # [0.85:1] -> 2, [0.7:0.85] -> 1, else 0
 
                         f.write(iname + "," + tt + "," + ttv + "\n")
                         log.debug(f"Saved partition for {name}")
