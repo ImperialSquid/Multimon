@@ -138,10 +138,10 @@ def main():
             # get pokemon data
             data = get_pokemon_data(index, gen_map, type_map)
 
-            for row in data:
+            for ri, row in enumerate(data):
                 for back in [False, True]:
                     name = row[0] + "_" + ["front", "back"][int(back)]
-                    iname = str((index-1)*2+int(back)).zfill(4) + ".png"
+                    iname = str((index-1)*2+int(back)).zfill(4) + "_" + str(ri) + ".png"
 
                     with open("data.csv", "a") as f:
                         f.write(iname + "," + ",".join(str(x) for x in row[1:]) + "\n")
