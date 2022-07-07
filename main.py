@@ -80,10 +80,10 @@ def get_pokemon_data(index, gen_map=None, type_map=None):
 
 
 def save_pokemon_images(filename, index, back=False):
-    sprite = pb.sprite("pokemon", index, back=back)
-
     filepath = os.path.join("./sprites/raw", filename)
+
     if not os.path.exists(filepath):
+        sprite = pb.sprite("pokemon", index, back=back)
         with open(filepath, "wb") as f:
             f.write(sprite.img_data)
             log.debug(f"Saved sprite for filename {filename}")
