@@ -143,11 +143,15 @@ def main():
                     name = row[0] + "_" + ["front", "back"][int(back)]
                     iname = str((index-1)*2+int(back)).zfill(4) + "_" + str(ri) + ".png"
 
+                    try:
+                        save_pokemon_images(iname, index, back)
+                    except HTTPError:
+                        log.warning(f"Could not get sprite for {name}")
+                        continue
+
                     with open("data.csv", "a") as f:
                         f.write(iname + "," + ",".join(str(x) for x in row[1:]) + "\n")
                         log.debug(f"Saved data for {name}")
-
-                    save_pokemon_images(iname, index, back)
 
                     with open("partitions.csv", "a") as f:
                         # hash the name to get a partition value in [0:1]
