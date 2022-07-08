@@ -166,6 +166,8 @@ def main():
             log.error(e)
             break
         index += 1
+    postprocess_pokemon_images()
+    postprocess_pokemon_data()
 
 
 if __name__ == '__main__':
