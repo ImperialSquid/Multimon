@@ -50,11 +50,9 @@ def get_pokemon_data(index, gen_map=None, type_map=None):
     # check pokemon name in gen map
     if p.name not in gen_map:
         # if not, fetch the variants' names from the species
-        names = [var.pokemon.name for var in pb.pokemon_species(p.species.name).varieties]
-
-        # some variants are bugged and give Nones at the end of the list, so we need to remove them
-        if p.species.name in ["basculin", "toxtricity-amped"]:
-            names = names[:-1]
+        # some variants give erroneous None names, so we need to check for that
+        names = [var.pokemon.name for var in pb.pokemon_species(p.species.name).varieties
+                 if var.pokemon.name is not None]
     else:
         names = [p.name]
 
