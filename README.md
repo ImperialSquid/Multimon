@@ -13,22 +13,21 @@ This script contains everything you need to construct the dataset. It will downl
 Sprites are stored in two directories, `sprites/processed` for the actual sprites to use and `sprites/raw` for raw images (these are provided in case you want to do custom postprocessing, though it's unlikely you'll ever need to)
 
 ### [The Data](data.csv)
-This is the main file containing the labels. It contains the following columns:
+This is the main file containing the labels. It contains the following columns. 
 
-| Name         | Description                                  | Type    | 
-|--------------|----------------------------------------------|---------|
-| `index`      | The filename of the sprite                   | string  |
-| `type1`[^1]  | The first type of the pokemon                | int     |
-| `type2`[^1]  | The second type of the pokemon               | int     |
-| `gen`        | The generation the pokemon was introduced in | integer |
-| `hp`[^2]     | The HP stat of the pokemon                   | float   |
-| `atk`[^2]    | The attack stat of the pokemon               | float   |
-| `def`[^2]    | The defense stat of the pokemon              | float   |
-| `spatk`[^2]  | The special attack stat of the pokemon       | float   |
-| `spdef`[^2]  | The special defense stat of the pokemon      | float   | 
-| `spd`[^2]    | The speed stat of the pokemon                | float   |
-| `height`[^2] | The height of the pokemon                    | float   |
-| `weight`[^2] | The weight of the pokemon                    | float   |
+| Name                                          | Description                                  | Type    | 
+|-----------------------------------------------|----------------------------------------------|---------|
+| `index`                                       | The filename of the sprite                   | string  |
+| `type1`, `type2`[^1]                          | The first and second type of the pokemon     | int     |
+| `gen`                                         | The generation the pokemon was introduced in | integer |
+| `hp_raw`, `hp_norm`, `hp_std`[^2]             | The HP stat of the pokemon                   | float   |
+| `atk_raw`, `atc_norm`, `atc_std`[^2]          | The Attack stat of the pokemon               | float   |
+| `def_raw`, `def_norm`, `def_std`[^2]          | The Defense stat of the pokemon              | float   |
+| `spatk_raw`, `spatk_norm`, `spatk_std`[^2]    | The Special Attack stat of the pokemon       | float   |
+| `spdef_raw`, `spdef_norm`, `spdef_std`[^2]    | The Special Defense stat of the pokemon      | float   |
+| `spd_raw`, `spd_norm`, `spd_std`[^2]          | The Speed stat of the pokemon                | float   |
+| `height_raw`, `height_norm`, `height_std`[^2] | The height of the pokemon                    | float   |
+| `weight_raw`, `weight_norm`, `weight_std`[^2] | The weight of the pokemon                    | float   |
 
 [^1]: Pokémon have one or two of 17 types, for consistency we create an 18th "null" type. `type1` and `type2` should be interpreted as a **two-hot vector together**.
 
