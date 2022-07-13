@@ -33,3 +33,8 @@ This is the main file containing the labels. It contains the following columns:
 [^1]: Pokémon have one or two of 17 types, for consistency we create an 18th "null" type. `type1` and `type2` should be interpreted as a **two-hot vector together**.
 
 [^2]: hp and all the columns below are provided as the raw value, as well as the normalised and standardised values (suffixed as "_raw", "_norm" and "_std" respectively)
+
+### [Partitions](partitions.csv)
+Partitions are an important part of a dataset to ensure consistency between runs. Since this repo only contains the script for constructing the dataset, the partitions are also not available for direct download. To ensure consistency  the partitions are created by hashing the name of the pokemon and using that value to assign partitions. This method is consistent between python versions, download instances and also in the event of more Pokémon being released.
+
+The partitions have an 80/20 split for training/test setups and a 70/15/15 split for train/test/validation setups.
