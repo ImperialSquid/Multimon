@@ -163,7 +163,7 @@ def main():
                         f.write(iname + "," + tt + "," + ttv + "\n")
                         log.debug(f"Saved partition for {name}")
 
-        except HTTPError as e:
+        except ValueError as e:
             break
         index += 1
     postprocess_pokemon_images()
