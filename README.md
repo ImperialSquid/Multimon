@@ -10,7 +10,7 @@ Note that due to copyright restrictions, the dataset is not available for direct
 This script contains everything you need to construct the dataset. It will download the sprites and labels from the [PokeAPI](https://pokeapi.co/), perform postprocessing (standardising the sprites and labels) and construct partitions for train/test and train/test/validation splits.
 
 ### [The Sprites](sprites/)
-Sprites are stored in two directories, sprites/processed for the actual sprites to use and sprites/raw for raw images (these are provided in case you want to do custom postprocessing, though it's unlikely you'll ever need to)
+Sprites are stored in two directories, `sprites/processed` for the actual sprites to use and `sprites/raw` for raw images (these are provided in case you want to do custom postprocessing, though it's unlikely you'll ever need to)
 
 ### [The Data](data.csv)
 This is the main file containing the labels. It contains the following columns:
@@ -30,6 +30,6 @@ This is the main file containing the labels. It contains the following columns:
 | `height`[^2] | The height of the pokemon                    | float   |
 | `weight`[^2] | The weight of the pokemon                    | float   |
 
-[^1] Pokémon have one or two of 17 types, for consistency we create an 18th "null" type. `type1` and `type2` should be interpreted as a **two-hot vector together**.
+[^1]: Pokémon have one or two of 17 types, for consistency we create an 18th "null" type. `type1` and `type2` should be interpreted as a **two-hot vector together**.
 
 [^2]: hp and all the columns below are provided as the raw value, as well as the normalised and standardised values (suffixed as "_raw", "_norm" and "_std" respectively)
