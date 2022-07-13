@@ -36,4 +36,4 @@ This is the main file containing the labels. It contains the following columns.
 ### [Partitions](partitions.csv)
 Partitions are an important part of a dataset to ensure consistency between runs. Since this repo only contains the script for constructing the dataset, the partitions are also not available for direct download. To ensure consistency  the partitions are created by hashing the name of the pokemon and using that value to assign partitions. This method is consistent between python versions, download instances and also in the event of more Pokémon being released.
 
-The partitions have an 80/20 split for training/test setups and a 70/15/15 split for train/test/validation setups.
+The partitions have a 70/15/15 split for train/test/validation splits.
