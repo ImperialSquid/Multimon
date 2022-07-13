@@ -129,7 +129,7 @@ def main():
         f.write("index,type1,type2,gen,hp,att,def,spatt,spdef,speed,height,weight\n")
         
     with open("partitions.csv", "w") as f:
-        f.write("index,tt_split,ttv_split\n")
+        f.write("index,split\n")
 
     index = 1
     while True:
@@ -155,12 +155,10 @@ def main():
                     with open("partitions.csv", "a") as f:
                         # hash the name to get a partition value in [0:1]
                         part = float(crc32(name.encode("utf-8")) & 0xffffffff) / 2**32
-                        # train/test split is 0.8/0.2
-                        tt = str(int(part > 0.8))  # [0.8:1] -> 1, else 0
                         # train/test/validation split is 0.7/0.15/0.15
-                        ttv = str(2 if part > 0.85 else int(part > 0.7))  # [0.85:1] -> 2, [0.7:0.85] -> 1, else 0
+                        split = str(2 if part > 0.85 else int(part > 0.7))  # [0.85:1] -> 2, [0.7:0.85] -> 1, else 0
 
-                        f.write(iname + "," + tt + "," + ttv + "\n")
+                        f.write(iname + "," + split + "\n")
                         log.debug(f"Saved partition for {name}")
 
         except ValueError as e:
