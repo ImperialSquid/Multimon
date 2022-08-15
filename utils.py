@@ -55,9 +55,9 @@ class MultimonDataset(Dataset):
         filter = data["index"].isin(self.partitions)
         data = data[filter]
 
-        data = {row["index"]: [zeros(type_counts).scatter_(0, tensor([row["type1"], row["type2"]]), 1),
-                               zeros(gen_counts).scatter_(0, tensor([row["gen"]-1]), 1),
-                               *[tensor(row[x]).float() for x in stats]]
+        data = {row["index"]: {"type": zeros(type_counts).scatter_(0, tensor([row["type1"], row["type2"]]), 1),
+                               "gen": zeros(gen_counts).scatter_(0, tensor([row["gen"]-1]), 1),
+                               **{x: tensor(row[x]).float() for x in stats}}
                 for index, row in data.iterrows()}
 
         return data
