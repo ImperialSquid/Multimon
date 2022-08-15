@@ -1,7 +1,5 @@
 import os
-from random import sample
 
-import numpy as np
 from pandas import read_csv
 
 import torch
@@ -11,7 +9,6 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision.io import read_image
 from torchvision.transforms import RandomResizedCrop, Compose, ToTensor
 from torchvision.transforms.functional import resize
-from tqdm import tqdm
 
 
 class MultimonDataset(Dataset):
@@ -96,11 +93,9 @@ if __name__ == '__main__':
 
     for data, labels in random_data:
         data = data.cpu()
-        print("Here!")
         print(data.permute(1, 2, 0).size())
         plt.imshow(data.permute(1, 2, 0))
         plt.show()
-        input()
-    #
-    # train_dataloader = DataLoader(training_data, batch_size=64, shuffle=True)
-    # test_dataloader = DataLoader(testing_data, batch_size=64, shuffle=True)
+        print("Here!")
+        print(labels)
+        input("Enter to continue...")
