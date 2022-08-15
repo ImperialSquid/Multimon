@@ -1,6 +1,7 @@
 import os
 
 from pandas import read_csv
+from pprint import pprint
 
 import torch
 from matplotlib import pyplot as plt
@@ -97,5 +98,5 @@ if __name__ == '__main__':
         plt.imshow(data.permute(1, 2, 0))
         plt.show()
         print("Here!")
-        print(labels)
+        pprint(labels)
         input("Enter to continue...")
