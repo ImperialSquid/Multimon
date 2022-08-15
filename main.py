@@ -6,6 +6,7 @@ import cv2
 import logging
 import pandas as pd
 from zlib import crc32
+from pprint import pprint
 
 
 def get_type_indexes():
@@ -110,9 +111,18 @@ def postprocess_pokemon_images(size=(128, 128)):
     # load images, standardise size, remove transparency and save to sprites/processed
     for filename in os.listdir("./sprites/raw"):
         if filename.endswith(".png"):
-            img = cv2.imread(os.path.join("./sprites/raw", filename))
-            img = cv2.resize(img, size)
+            img = cv2.imread(os.path.join("./sprites/raw", filename), cv2.IMREAD_UNCHANGED)
+
+            # credit to https://stackoverflow.com/a/53737420
+            trans_mask = img[:, :, 3] == 0
+            img[trans_mask] = [0, 0, 0, 0]
             img = cv2.cvtColor(img, cv2.COLOR_RGBA2RGB)
+            img = cv2.resize(img, size)
+
+            # cv2.imshow("image", img)
+            # if cv2.waitKey(0) == 27:
+            #     pass
+
             cv2.imwrite(os.path.join("./sprites/processed", filename), img)
             log.debug(f"Saved processed image for {filename}")
 
