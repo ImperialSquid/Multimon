@@ -99,9 +99,7 @@ def postprocess_pokemon_data():
     # load csv data, figure our standardised and normalised values and append to every row
     df = pd.read_csv("data.csv")
     for stat in ["hp", "att", "def", "spatt", "spdef", "speed", "height", "weight"]:
-        df[stat+"_std"] = (df[stat] - df[stat].mean()) / df[stat].std()
-        df[stat+"_norm"] = (df[stat] - df[stat].min()) / (df[stat].max() - df[stat].min())
-        df.rename(columns={stat: stat+"_raw"}, inplace=True)
+        df[stat] = (df[stat] - df[stat].min()) / (df[stat].max() - df[stat].min())
     df.to_csv("data.csv", index=False)
 
     log.info("Postprocessed pokemon data")
