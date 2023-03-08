@@ -34,7 +34,9 @@ def get_generation_indexes():
     i = 1
     while True:
         try:
-            for pokemon in pb.generation(i).pokemon_species:
+            gen_species = pb.generation(i).pokemon_species
+            log.debug(f"Found {len(gen_species)} species for generation {i}")
+            for pokemon in gen_species:
                 generations[pokemon.name] = i
             i += 1
         except HTTPError:
@@ -182,6 +184,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     logging.getLogger("urllib3").setLevel(logging.WARNING)  # disable requests logging
     log = logging.getLogger()
+    log.setLevel(logging.DEBUG)
 
     main()
 
