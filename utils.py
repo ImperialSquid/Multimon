@@ -44,12 +44,12 @@ class MultimonDataset(Dataset):
         self.data = self.parse_datafile(data_file)
 
     def parse_partitions(self, part_file, partition):
-        parts = read_csv(os.path.join(self.img_path, "..", part_file))
+        parts = read_csv(os.path.join(self.img_path, "..", "..", part_file))
         filter = parts["split"] == partition
         return parts["index"][filter]
 
     def parse_datafile(self, data_path):
-        data = read_csv(os.path.join(self.img_path, "..", data_path))
+        data = read_csv(os.path.join(self.img_path, "..", "..", data_path))
 
         self.type_counts = max(data["type1"].max(), data["type2"].max()) + 1
         self.gen_counts = data["gen"].max() + 1
