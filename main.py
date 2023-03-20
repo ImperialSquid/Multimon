@@ -1,12 +1,11 @@
+import logging
 import os
+from zlib import crc32
 
+import cv2
+import pandas as pd
 import pokebase as pb
 from requests.exceptions import HTTPError
-import cv2
-import logging
-import pandas as pd
-from zlib import crc32
-from pprint import pprint
 
 
 def get_type_indexes():
@@ -105,7 +104,7 @@ def postprocess_pokemon_data():
     log.info("Postprocessed pokemon data")
 
 
-def postprocess_pokemon_images(size=(128, 128)):
+def postprocess_pokemon_images(size=(256, 256)):
     log.info("Postprocessing pokemon images...")
 
     # load images, standardise size, remove transparency and save to sprites/processed
