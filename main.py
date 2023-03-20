@@ -36,7 +36,7 @@ def get_generation_indexes():
             gen_species = pb.generation(i).pokemon_species
             log.debug(f"Found {len(gen_species)} species for generation {i}")
             for pokemon in gen_species:
-                generations[pokemon.name] = i
+                generations[pokemon.name] = i - 1
             i += 1
         except HTTPError:
             break
