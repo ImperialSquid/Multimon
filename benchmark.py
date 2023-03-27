@@ -124,7 +124,9 @@ def main():
 
 def train(model, tasks, dataloaders, losses, metrics, optimizer, device, epochs):
     for epoch in range(epochs):
-        running_loss = {"train": [], "test": []}
+        running_loss = dict()
+        for task in tasks:
+            running_loss[task] = {"train": [], "test": []}
         now = datetime.now()
 
         for phase in ["train", "test"]:
@@ -142,7 +144,7 @@ def train(model, tasks, dataloaders, losses, metrics, optimizer, device, epochs)
                     loss = 0.0
                     for task in tasks:
                         loss += losses[task](preds[task], labels[task])
-                    running_loss["train"].append(loss.item())
+                        running_loss[task]["train"].append(loss.item())
 
                     loss.backward()
                     optimizer.step()
@@ -154,18 +156,19 @@ def train(model, tasks, dataloaders, losses, metrics, optimizer, device, epochs)
                         loss = 0.0
                         for task in tasks:
                             loss += losses[task](preds[task], labels[task])
-                        running_loss["test"].append(loss.item())
+                            running_loss[task]["test"].append(loss.item())
 
                 for task in tasks:
                     for metric in metrics[phase][task]:
                         metrics[phase][task][metric].update(preds[task], labels[task])
 
         # log epoch train and test loss and accuracy and time
-        log.info(f"Train Loss: {mean(running_loss['train']):.6f} Test Loss: {mean(running_loss['test']):.6f}")
         for task in tasks:
+            log.info(f"{task} - ")
+            log.info(f"Train Loss: {mean(running_loss[task]['train']):.6f} "
+                     f"Test Loss: {mean(running_loss[task]['test']):.6f}")
             for metric in metrics["test"][task]:
-                log.info(f"{task} - "
-                         f"Train {metric.title()}: {metrics['train'][task][metric].compute()} "
+                log.info(f"Train {metric.title()}: {metrics['train'][task][metric].compute()} "
                          f"Test {metric.title()}: {metrics['test'][task][metric].compute()}")
         log.info(f"Time: {datetime.now() - now}")
 
@@ -176,6 +179,11 @@ def train(model, tasks, dataloaders, losses, metrics, optimizer, device, epochs)
                                      "task1": tasks[0], "task2": tasks[1] if len(tasks) > 1 else None,
                                      "target": task, "epoch": epoch, "phase": phase, "metric": metric,
                                      "value": metrics[phase][task][metric].compute()})
+
+                writer.writerow({"model": model.model_name,
+                                 "task1": tasks[0], "task2": tasks[1] if len(tasks) > 1 else None,
+                                 "target": task, "epoch": epoch, "phase": phase, "metric": "loss",
+                                 "value": running_loss[task][phase]})
 
         for phase in ["train", "test"]:
             for task in tasks:
