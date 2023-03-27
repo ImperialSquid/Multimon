@@ -1,3 +1,4 @@
+import csv
 import logging
 from datetime import datetime
 from itertools import combinations
@@ -171,6 +172,14 @@ def train(model, tasks, dataloaders, losses, metrics, optimizer, device, epochs)
         for phase in ["train", "test"]:
             for task in tasks:
                 for metric in metrics[phase][task]:
+                    writer.writerow({"model": model.model_name,
+                                     "task1": tasks[0], "task2": tasks[1] if len(tasks) > 1 else None,
+                                     "target": task, "epoch": epoch, "phase": phase, "metric": metric,
+                                     "value": metrics[phase][task][metric].compute()})
+
+        for phase in ["train", "test"]:
+            for task in tasks:
+                for metric in metrics[phase][task]:
                     metrics[phase][task][metric].reset()
 
 
@@ -247,8 +256,12 @@ if __name__ == '__main__':
     log.info("Starting benchmark...")
 
     # create results csv with current datetime in name
-    results_name = f"results-{datetime.now().strftime('%d-%m-%Y_%H-%M-%S')}.csv"
+    results_name = f"results/results-{datetime.now().strftime('%d-%m-%Y_%H-%M-%S')}.csv"
+    fields = ["model", "task1", "task2", "target", "epoch", "phase", "metric", "value"]
+    with open(results_name, "w") as f:
+        writer = csv.DictWriter(f, fieldnames=fields)
+        writer.writeheader()
 
-    main()
+        main()
 
     log.info("Finished benchmark.")
