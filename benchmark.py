@@ -20,8 +20,8 @@ def main():
     log.info(f"{device=}")
 
     tasks = ["type", "gen", "hp", "att", "def", "spatt", "spdef", "speed", "height", "weight"]
-    models = ["vgg13", "vgg19", "resnet18", "resnet50", "resnet152", "alexnet", "convnext_small", "convnext_large",
-              "densenet121", "densenet169", "efficientnet_v2_s", "efficientnet_v2_l"]
+    models = ["vgg13", "vgg19", "resnet18", "resnet50", "alexnet", "convnext_small", "convnext_base",
+              "densenet121", "densenet169", "efficientnet_v2_s", "efficientnet_v2_l", "inception_v3"]
     models = models[:4]
 
     # load dataloaders
@@ -193,13 +193,22 @@ class MultimonModel(Module):
     def get_base_model(self, model_name, pretrained_weights):
         model = load("pytorch/vision:v0.14.0", model_name, weights=pretrained_weights).to(self.device)
 
-        if model_name in ["vgg11", "vgg16"]:
+        if "vgg" in model_name:
             out_size = model.classifier[0].in_features
             model.classifier = Identity()
-        elif model_name in ["resnet18", "resnet50"]:
+        elif "resnet" in model_name:
             out_size = model.fc.in_features
             model.fc = Identity()
-        elif model_name in ["convnext_tiny", "convnext_medium"]:
+        elif "convnext" in model_name:
+            out_size = model.fc.in_features
+            model.fc = Identity()
+        elif "densenet" in model_name:
+            out_size = model.classifier.in_features
+            model.classifier = Identity()
+        elif "efficientnet" in model_name:
+            out_size = model.classifier.in_features
+            model.classifier = Identity()
+        elif "inception" in model_name:
             out_size = model.fc.in_features
             model.fc = Identity()
         else:
