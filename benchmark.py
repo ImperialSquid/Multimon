@@ -94,7 +94,7 @@ def main():
             dataloaders["test"].dataset.transforms = Compose([weights.transforms()])
 
             # train model
-            train(model, [t], dataloaders, losses, optimizer, device, epochs)
+            train(model, [t], dataloaders, losses, metrics, optimizer, device, epochs)
 
             log.info(f"Finished training {m} on {t}.")
 
@@ -116,7 +116,7 @@ def main():
             dataloaders["test"].dataset.transforms = Compose([weights.transforms()])
 
             # train model
-            train(model, [t1, t2], dataloaders, losses, optimizer, device, epochs)
+            train(model, [t1, t2], dataloaders, losses, metrics, optimizer, device, epochs)
 
             log.info(f"Finished training {m} on {t1} and {t2}.")
 
