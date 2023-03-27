@@ -183,7 +183,7 @@ def train(model, tasks, dataloaders, losses, metrics, optimizer, device, epochs)
                 writer.writerow({"model": model.model_name,
                                  "task1": tasks[0], "task2": tasks[1] if len(tasks) > 1 else None,
                                  "target": task, "epoch": epoch, "phase": phase, "metric": "loss",
-                                 "value": running_loss[task][phase]})
+                                 "value": mean(running_loss[task][phase])})
 
         for phase in ["train", "test"]:
             for task in tasks:
