@@ -121,10 +121,9 @@ def main():
             log.info(f"Finished training {m} on {t1} and {t2}.")
 
 
-def train(model, tasks, dataloaders, losses, optimizer, device, epochs):
+def train(model, tasks, dataloaders, losses, metrics, optimizer, device, epochs):
     for epoch in range(epochs):
         running_loss = {"train": [], "test": []}
-        running_acc = {"train": [], "test": []}
         now = datetime.now()
 
         for phase in ["train", "test"]:
@@ -140,12 +139,9 @@ def train(model, tasks, dataloaders, losses, optimizer, device, epochs):
                     preds = model(data)
 
                     loss = 0.0
-                    acc = 0.0
                     for task in tasks:
                         loss += losses[task](preds[task], labels[task])
-                        acc += get_acc(task, preds[task], labels[task])
                     running_loss["train"].append(loss.item())
-                    running_acc["train"].append(acc / len(tasks))
 
                     loss.backward()
                     optimizer.step()
@@ -155,18 +151,27 @@ def train(model, tasks, dataloaders, losses, optimizer, device, epochs):
                         preds = model(data)
 
                         loss = 0.0
-                        acc = 0.0
                         for task in tasks:
                             loss += losses[task](preds[task], labels[task])
-                            acc += get_acc(task, preds[task], labels[task])
                         running_loss["test"].append(loss.item())
-                        running_acc["test"].append(acc / len(tasks))
+
+                for task in tasks:
+                    for metric in metrics[phase][task]:
+                        metrics[phase][task][metric].update(preds[task], labels[task])
 
         # log epoch train and test loss and accuracy and time
-        log.info(
-            f"Epoch {epoch} Train Loss: {mean(running_loss['train']):.6f} Test Loss: {mean(running_loss['test']):.6f}")
-        log.info(f"Epoch {epoch} Train Acc: {mean(running_acc['train']):.3%} Test Acc: {mean(running_acc['test']):.3%}")
-        log.info(f"Epoch {epoch} Time: {datetime.now() - now}")
+        log.info(f"Train Loss: {mean(running_loss['train']):.6f} Test Loss: {mean(running_loss['test']):.6f}")
+        for task in tasks:
+            for metric in metrics["test"][task]:
+                log.info(f"{task} - "
+                         f"Train {metric.title()}: {metrics['train'][task][metric].compute()} "
+                         f"Test {metric.title()}: {metrics['test'][task][metric].compute()}")
+        log.info(f"Time: {datetime.now() - now}")
+
+        for phase in ["train", "test"]:
+            for task in tasks:
+                for metric in metrics[phase][task]:
+                    metrics[phase][task][metric].reset()
 
 
 def get_acc(task, preds, labels):
