@@ -8,6 +8,7 @@ from torch import topk, optim, Tensor
 from torch.hub import load
 from torch.nn import MSELoss, BCEWithLogitsLoss, Sequential, Linear, ReLU, Module, Identity
 from torch.utils.data import DataLoader
+from torcheval.metrics import TopKMultilabelAccuracy, MultilabelAUPRC, MeanSquaredError, R2Score
 from torchvision.transforms import RandomHorizontalFlip, RandomResizedCrop, Compose, RandomRotation
 
 from utils import MultimonDataset
@@ -48,6 +49,26 @@ def main():
             losses[t] = BCEWithLogitsLoss(weight=gen_weights).to(device)
         else:
             losses[t] = MSELoss().to(device)
+
+    # instantiate metrics and move to device
+    metrics = dict()
+    for phase in ["train", "test"]:
+        metrics[phase] = {"type": {"acc": TopKMultilabelAccuracy(criteria="hamming", k=2),
+                                   "auprc": MultilabelAUPRC(num_labels=type_counts)},
+                          "gen": {"acc": TopKMultilabelAccuracy(criteria="hamming", k=1),
+                                  "auprc": MultilabelAUPRC(num_labels=gen_counts)},
+                          "hp": {"mse": MeanSquaredError(), "r2": R2Score()},
+                          "att": {"mse": MeanSquaredError(), "r2": R2Score()},
+                          "def": {"mse": MeanSquaredError(), "r2": R2Score()},
+                          "spatt": {"mse": MeanSquaredError(), "r2": R2Score()},
+                          "spdef": {"mse": MeanSquaredError(), "r2": R2Score()},
+                          "speed": {"mse": MeanSquaredError(), "r2": R2Score()},
+                          "height": {"mse": MeanSquaredError(), "r2": R2Score()},
+                          "weight": {"mse": MeanSquaredError(), "r2": R2Score()}}
+
+        for task in metrics[phase]:
+            for metric in metrics[phase][task]:
+                metrics[phase][task][metric] = metrics[phase][task][metric].to(device)
 
     epochs = 10
 
