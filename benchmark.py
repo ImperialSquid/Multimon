@@ -178,6 +178,7 @@ class MultimonModel(Module):
     def __init__(self, model_name, pretrained_weights, tasks, gen_count, type_count, device):
         super(MultimonModel, self).__init__()
         self.device = device
+        self.model_name = model_name
         self.model, out_size = self.get_base_model(model_name, pretrained_weights)
         self.heads = self.get_heads(tasks, out_size, gen_count, type_count)
 
