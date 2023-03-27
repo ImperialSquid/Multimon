@@ -4,7 +4,7 @@ from itertools import combinations
 from statistics import mean
 
 import torch
-from torch import topk, optim, Tensor
+from torch import optim, Tensor
 from torch.hub import load
 from torch.nn import MSELoss, BCEWithLogitsLoss, Sequential, Linear, ReLU, Module, Identity
 from torch.utils.data import DataLoader
@@ -172,19 +172,6 @@ def train(model, tasks, dataloaders, losses, metrics, optimizer, device, epochs)
             for task in tasks:
                 for metric in metrics[phase][task]:
                     metrics[phase][task][metric].reset()
-
-
-def get_acc(task, preds, labels):
-    if task == "type":  # sum of predictions where at least one is correct
-        return sum([sum(x in p_ind for x in l_ind) > 0 for p_ind, l_ind in
-                    zip(topk(preds, dim=1, k=2).indices.tolist(),
-                        topk(labels, dim=1, k=2).indices.tolist())]) / preds.size()[0]
-    elif task == "gen":  # sum of predictions where gen is correct
-        return sum([p_ind == l_ind for p_ind, l_ind in
-                    zip(topk(preds, dim=1, k=1).indices.tolist(),
-                        topk(labels, dim=1, k=1).indices.tolist())]) / preds.size()[0]
-    else:  # MSE since accuracy is not a simple metric for regression tasks
-        return mean([(p - l) ** 2 for p, l in zip(preds.squeeze().tolist(), labels.squeeze().tolist())])
 
 
 class MultimonModel(Module):
