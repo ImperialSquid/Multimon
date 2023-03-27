@@ -23,7 +23,7 @@ def main():
     tasks = ["type", "gen", "hp", "att", "def", "spatt", "spdef", "speed", "height", "weight"]
     models = ["vgg13", "vgg19", "resnet18", "resnet50", "alexnet", "convnext_small", "convnext_base",
               "densenet121", "densenet169", "efficientnet_v2_s", "efficientnet_v2_l", "inception_v3"]
-    models = models[:4]
+    models = models[:2]
 
     # load dataloaders
     dataloaders = dict()
@@ -71,7 +71,7 @@ def main():
             for metric in metrics[phase][task]:
                 metrics[phase][task][metric] = metrics[phase][task][metric].to(device)
 
-    epochs = 10
+    epochs = 2
 
     log.debug(f"{tasks=}")
     log.debug(f"{models=}")
@@ -266,7 +266,7 @@ if __name__ == '__main__':
     # create results csv with current datetime in name
     results_name = f"results/results-{datetime.now().strftime('%d-%m-%Y_%H-%M-%S')}.csv"
     fields = ["model", "task1", "task2", "target", "epoch", "phase", "metric", "value"]
-    with open(results_name, "w") as f:
+    with open(results_name, "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fields)
         writer.writeheader()
 
