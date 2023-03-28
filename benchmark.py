@@ -164,11 +164,10 @@ def train(model, tasks, dataloaders, losses, metrics, optimizer, device, epochs)
 
         # log epoch train and test loss and accuracy and time
         for task in tasks:
-            log.info(f"{task} - ")
-            log.info(f"Train Loss: {mean(running_loss[task]['train']):.6f} "
+            log.info(f"{task.title()} -  Train Loss: {mean(running_loss[task]['train']):.6f} "
                      f"Test Loss: {mean(running_loss[task]['test']):.6f}")
             for metric in metrics["test"][task]:
-                log.info(f"Train {metric.title()}: {metrics['train'][task][metric].compute()} "
+                log.info(f"{task.title()} -  Train {metric.title()}: {metrics['train'][task][metric].compute()} "
                          f"Test {metric.title()}: {metrics['test'][task][metric].compute()}")
         log.info(f"Time: {datetime.now() - now}")
 
