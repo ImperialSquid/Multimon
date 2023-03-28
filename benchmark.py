@@ -178,7 +178,7 @@ def train(model, tasks, dataloaders, losses, metrics, optimizer, device, epochs)
                     writer.writerow({"model": model.model_name,
                                      "task1": tasks[0], "task2": tasks[1] if len(tasks) > 1 else None,
                                      "target": task, "epoch": epoch, "phase": phase, "metric": metric,
-                                     "value": metrics[phase][task][metric].compute()})
+                                     "value": metrics[phase][task][metric].compute().item()})
 
                 writer.writerow({"model": model.model_name,
                                  "task1": tasks[0], "task2": tasks[1] if len(tasks) > 1 else None,
