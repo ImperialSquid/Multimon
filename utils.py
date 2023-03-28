@@ -1,10 +1,9 @@
 import os
-
-from pandas import read_csv
 from pprint import pprint
 
 import torch
 from matplotlib import pyplot as plt
+from pandas import read_csv
 from torch import zeros, tensor
 from torch.utils.data import Dataset, DataLoader
 from torchvision.io import read_image
@@ -68,7 +67,7 @@ class MultimonDataset(Dataset):
 
         data = {row["index"]: {"type": zeros(self.type_counts).scatter_(0, tensor([row["type1"], row["type2"]]), 1),
                                "gen": zeros(self.gen_counts).scatter_(0, tensor([row["gen"]]), 1),
-                               **{x: tensor(row[x]).float() for x in stats}}
+                               **{x: tensor([row[x]]).float() for x in stats}}
                 for index, row in data.iterrows()}
 
         return data
