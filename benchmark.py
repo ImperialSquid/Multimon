@@ -7,9 +7,9 @@ from statistics import mean
 import torch
 from torch import optim, Tensor
 from torch.hub import load
-from torch.nn import MSELoss, BCEWithLogitsLoss, Sequential, Linear, ReLU, Module, Identity
+from torch.nn import MSELoss, BCEWithLogitsLoss, Sequential, Linear, ReLU, Module, Identity, CrossEntropyLoss
 from torch.utils.data import DataLoader
-from torcheval.metrics import TopKMultilabelAccuracy, MultilabelAUPRC, MeanSquaredError, R2Score, MultilabelAccuracy
+from torcheval.metrics import TopKMultilabelAccuracy, MultilabelAUPRC, MeanSquaredError, R2Score, MulticlassAccuracy
 from torchvision.transforms import RandomHorizontalFlip, RandomResizedCrop, Compose, RandomRotation
 
 from utils import MultimonDataset
@@ -56,7 +56,7 @@ def main():
     for phase in ["train", "test"]:
         metrics[phase] = {"type": {"acc": TopKMultilabelAccuracy(criteria="hamming", k=2),
                                    "auprc": MultilabelAUPRC(num_labels=type_counts)},
-                          "gen": {"acc": MultilabelAccuracy(criteria="hamming"),
+                          "gen": {"acc": OneHotMulticlassAccuracy(),  # custom metric due to one hot target
                                   "auprc": MultilabelAUPRC(num_labels=gen_counts)},
                           "hp": {"mse": MeanSquaredError(), "r2": R2Score()},
                           "att": {"mse": MeanSquaredError(), "r2": R2Score()},
@@ -250,6 +250,15 @@ class MultimonModel(Module):
                                          Linear(in_features=256, out_features=1)).to(self.device)
 
         return heads
+
+
+class OneHotMulticlassAccuracy(MulticlassAccuracy):
+    def __init__(self, *args, **kwargs):
+        super(OneHotMulticlassAccuracy, self).__init__(*args, **kwargs)
+
+    def update(self, output, target):
+        target = target.argmax(dim=1)
+        super(OneHotMulticlassAccuracy, self).update(output, target)
 
 
 if __name__ == '__main__':
