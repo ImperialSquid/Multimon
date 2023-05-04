@@ -1,9 +1,10 @@
-from os import listdir
+from os import listdir, makedirs
 from os.path import join
 
 import pandas as pd
 import seaborn as sns
 
+makedirs("graphs", exist_ok=True)
 data = pd.read_csv(join("results", sorted(listdir("./results"))[-1]))
 items = data.groupby(["model", "task1", "task2"], dropna=False).size().reset_index().drop(0, axis=1).values
 

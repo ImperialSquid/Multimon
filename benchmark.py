@@ -1,5 +1,6 @@
 import csv
 import logging
+import os
 from datetime import datetime
 from itertools import combinations
 from statistics import mean
@@ -262,6 +263,7 @@ if __name__ == '__main__':
 
     # create results csv with current datetime in name
     results_name = f"results/results-{datetime.now().strftime('%d-%m-%Y_%H-%M-%S')}.csv"
+    os.makedirs(os.path.dirname(results_name), exist_ok=True)
     fields = ["model", "task1", "task2", "target", "epoch", "phase", "metric", "value"]
     with open(results_name, "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fields)
