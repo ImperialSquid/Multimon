@@ -10,7 +10,8 @@ from torch import optim, Tensor
 from torch.hub import load
 from torch.nn import MSELoss, BCEWithLogitsLoss, Sequential, Linear, ReLU, Module, Identity, CrossEntropyLoss
 from torch.utils.data import DataLoader
-from torchmetrics.classification import MultilabelAccuracy, MulticlassAccuracy
+from torchmetrics.classification import MultilabelAccuracy, MulticlassAccuracy, MultilabelPrecision, \
+    MulticlassPrecision
 from torchmetrics.regression import MeanSquaredError, R2Score
 from torchvision.transforms import RandomHorizontalFlip, RandomResizedCrop, Compose, RandomRotation
 
@@ -55,8 +56,10 @@ def main():
     # instantiate metrics and move to device
     metrics = dict()
     for phase in ["train", "test"]:
-        metrics[phase] = {"type": {"acc": MultilabelAccuracy(num_labels=int(type_counts))},
-                          "gen": {"acc": MulticlassAccuracy(num_classes=int(gen_counts))},
+        metrics[phase] = {"type": {"acc": MultilabelAccuracy(num_labels=int(type_counts)),
+                                   "prec": MultilabelPrecision(num_labels=int(type_counts))},
+                          "gen": {"acc": MulticlassAccuracy(num_classes=int(gen_counts)),
+                                  "prec": MulticlassPrecision(num_classes=int(gen_counts))},
                           "hp": {"mse": MeanSquaredError(), "r2": R2Score()},
                           "att": {"mse": MeanSquaredError(), "r2": R2Score()},
                           "def": {"mse": MeanSquaredError(), "r2": R2Score()},
