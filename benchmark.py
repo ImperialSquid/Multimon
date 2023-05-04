@@ -47,7 +47,7 @@ def main():
         if t == "type":
             losses[t] = BCEWithLogitsLoss(weight=type_weights).to(device)
         elif t == "gen":
-            losses[t] = BCEWithLogitsLoss(weight=gen_weights).to(device)
+            losses[t] = CrossEntropyLoss(weight=gen_weights).to(device)
         else:
             losses[t] = MSELoss().to(device)
 
