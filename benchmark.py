@@ -24,7 +24,6 @@ def main():
     tasks = ["type", "gen", "hp", "att", "def", "spatt", "spdef", "speed", "height", "weight"]
     models = ["vgg13", "vgg19", "resnet18", "resnet50", "alexnet", "convnext_small", "convnext_base",
               "densenet121", "densenet169", "efficientnet_v2_s", "efficientnet_v2_l", "inception_v3"]
-    models = models[:2]
 
     # load dataloaders
     dataloaders = dict()
@@ -70,7 +69,7 @@ def main():
             for metric in metrics[phase][task]:
                 metrics[phase][task][metric] = metrics[phase][task][metric].to(device)
 
-    epochs = 2
+    epochs = 200
 
     log.debug(f"{tasks=}")
     log.debug(f"{models=}")
