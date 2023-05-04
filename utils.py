@@ -66,7 +66,7 @@ class MultimonDataset(Dataset):
         data = data[filter]
 
         data = {row["index"]: {"type": zeros(self.type_counts).scatter_(0, tensor([row["type1"], row["type2"]]), 1),
-                               "gen": zeros(self.gen_counts).scatter_(0, tensor([row["gen"]]), 1),
+                               "gen": tensor(row["gen"]),
                                **{x: tensor([row[x]]).float() for x in stats}}
                 for index, row in data.iterrows()}
 
