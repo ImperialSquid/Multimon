@@ -81,6 +81,7 @@ def get_pokemon_data(index, gen_map=None, type_map=None):
 
 
 def save_pokemon_images(filename, index, back=False):
+    os.makedirs("./sprites/raw", exist_ok=True)
     filepath = os.path.join("./sprites/raw", filename)
 
     if not os.path.exists(filepath):
@@ -106,6 +107,8 @@ def postprocess_pokemon_data():
 
 def postprocess_pokemon_images(size=(256, 256)):
     log.info("Postprocessing pokemon images...")
+
+    os.makedirs("./sprites/processed", exist_ok=True)
 
     # load images, standardise size, remove transparency and save to sprites/processed
     for filename in os.listdir("./sprites/raw"):
