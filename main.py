@@ -166,7 +166,7 @@ def main():
 
                     with open("partitions.csv", "a") as f:
                         # hash the name to get a partition value in [0:1]
-                        part = float(crc32(name.encode("utf-8")) & 0xffffffff) / 2 ** 32
+                        part = float(crc32(name.encode("utf-8")) & 0xffffffff) / 2**32
                         # train/test/validation split is 0.7/0.15/0.15
                         split = str(2 if part > 0.85 else int(part > 0.7))  # [0.85:1] -> 2, [0.7:0.85] -> 1, else 0
 
@@ -175,8 +175,6 @@ def main():
 
         except ValueError as e:
             break
-        except HTTPError as e:
-            log.warning(f"Could not get data for index {index}")
         index += 1
     postprocess_pokemon_images()
     postprocess_pokemon_data()
