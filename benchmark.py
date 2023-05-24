@@ -24,7 +24,7 @@ def main():
     log.info(f"{device=}")
 
     tasks = ["type", "gen", "hp", "att", "def", "spatt", "spdef", "speed", "height", "weight"]
-    models = ["vgg13", "vgg19", "resnet18", "resnet50", "alexnet", "convnext_small", "convnext_base",
+    models = ["vgg13", "vgg19", "resnet18", "resnet50", "convnext_small", "convnext_base",
               "densenet121", "densenet169", "efficientnet_v2_s", "efficientnet_v2_l", "inception_v3"]
 
     # load dataloaders
