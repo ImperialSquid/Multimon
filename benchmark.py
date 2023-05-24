@@ -249,7 +249,7 @@ class MultimonModel(Module):
             elif task == "gen":
                 layers.append(Linear(in_features=512, out_features=gen_count))
             else:
-                layers.append(Linear(in_features=256, out_features=1))
+                layers.append(Linear(in_features=512, out_features=1))
 
             heads[task] = Sequential(*layers).to(self.device)
 
