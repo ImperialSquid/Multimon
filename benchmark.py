@@ -236,18 +236,19 @@ class MultimonModel(Module):
     def get_heads(self, tasks, out_size, gen_count, type_count):
         heads = dict()
         for task in tasks:
+            layers = []
+
+            layers.append(Linear(in_features=out_size, out_features=512))
+            layers.append(ReLU())
+
             if task == "type":
-                heads[task] = Sequential(Linear(in_features=out_size, out_features=512),
-                                         ReLU(),
-                                         Linear(in_features=512, out_features=type_count)).to(self.device)
+                layers.append(Linear(in_features=512, out_features=type_count))
             elif task == "gen":
-                heads[task] = Sequential(Linear(in_features=out_size, out_features=512),
-                                         ReLU(),
-                                         Linear(in_features=512, out_features=gen_count)).to(self.device)
+                layers.append(Linear(in_features=512, out_features=gen_count))
             else:
-                heads[task] = Sequential(Linear(in_features=out_size, out_features=256),
-                                         ReLU(),
-                                         Linear(in_features=256, out_features=1)).to(self.device)
+                layers.append(Linear(in_features=256, out_features=1))
+
+            heads[task] = Sequential(*layers).to(self.device)
 
         return heads
 
