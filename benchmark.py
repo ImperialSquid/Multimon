@@ -79,10 +79,9 @@ def main():
     log.debug(f"{models=}")
     log.debug(f"{epochs=}")
 
-    # single tasks
-    log.info("Single tasks...")
-    for t in tasks:
-        for m in models:
+    for m in models:
+        log.info("Single tasks...")
+        for t in tasks:
             log.info(f"Training {m} on {t}...")
 
             # load model with pretrained weights
@@ -101,10 +100,8 @@ def main():
 
             log.info(f"Finished training {m} on {t}.")
 
-    # paired tasks
-    log.info("Paired tasks...")
-    for t1, t2 in combinations(tasks, 2):
-        for m in models:
+        log.info("Paired tasks...")
+        for t1, t2 in combinations(tasks, 2):
             log.info(f"Training {m} on {t1} and {t2}...")
 
             # load model with pretrained weights
