@@ -8,7 +8,7 @@ from statistics import mean
 import torch
 from torch import optim, Tensor
 from torch.hub import load
-from torch.nn import MSELoss, BCEWithLogitsLoss, Sequential, Linear, ReLU, Module, Identity, CrossEntropyLoss
+from torch.nn import MSELoss, BCEWithLogitsLoss, Sequential, Linear, ReLU, Module, Identity, CrossEntropyLoss, Flatten
 from torch.utils.data import DataLoader
 from torchmetrics.classification import MultilabelAccuracy, MulticlassAccuracy, MultilabelPrecision, \
     MulticlassPrecision
@@ -217,7 +217,7 @@ class MultimonModel(Module):
             out_size = model.fc.in_features
             model.fc = Identity()
         elif "convnext" in model_name:
-            out_size = model.classifier.in_features
+            out_size = model.classifier[2].in_features
             model.classifier = Identity()
         elif "densenet" in model_name:
             out_size = model.classifier.in_features
@@ -237,6 +237,9 @@ class MultimonModel(Module):
         heads = dict()
         for task in tasks:
             layers = []
+
+            if "convnext" in self.model_name:
+                layers.append(Flatten())
 
             layers.append(Linear(in_features=out_size, out_features=512))
             layers.append(ReLU())
