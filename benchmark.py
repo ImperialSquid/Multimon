@@ -162,6 +162,7 @@ def train(model, tasks, dataloaders, losses, metrics, optimizer, device, epochs)
                         metrics[phase][task][metric].update(preds[task], labels[task])
 
         # log epoch train and test loss and accuracy and time
+        log.info(f"Epoch {epoch + 1}/{epochs}")
         for task in tasks:
             log.info(f"{task.title()} -  Train Loss: {mean(running_loss[task]['train']):.6f} "
                      f"Test Loss: {mean(running_loss[task]['test']):.6f}")
