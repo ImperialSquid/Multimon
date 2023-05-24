@@ -217,8 +217,8 @@ class MultimonModel(Module):
             out_size = model.fc.in_features
             model.fc = Identity()
         elif "convnext" in model_name:
-            out_size = model.fc.in_features
-            model.fc = Identity()
+            out_size = model.classifier.in_features
+            model.classifier = Identity()
         elif "densenet" in model_name:
             out_size = model.classifier.in_features
             model.classifier = Identity()
